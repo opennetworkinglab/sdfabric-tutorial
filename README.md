@@ -13,15 +13,14 @@ SD-Fabric is an open source programmable network fabric tailored for
 
 This repository contains instructions to learn how to use and develop SD-Fabric.
 Before starting, we suggest familiarizing with the SD-Fabric architecture and
-features using the following resources using the official SD-Fabric
-documentation website at <https://docs.sd-fabric.org>.
+features using the official SD-Fabric documentation website at
+<https://docs.sd-fabric.org>.
 
-In this tutorial, provide scripts to easily bring up an SD-Fabric environment in
-your laptop, including ONOS, emulated Stratum switches, and other SD-Fabric
-components. We also provide hands-on exercises that show how to set up
+In this tutorial, we provide scripts to easily bring up an SD-Fabric environment
+in a laptop (or server), including ONOS, emulated Stratum switches, and other
+SD-Fabric components. We also provide hands-on exercises that show how to set up
 SD-Fabric, use advanced features like the 5G P4-UPF, In-band Network Telemetry,
 and more.
-
 
 ## System requirements
 
@@ -42,7 +41,6 @@ adjust the CPU and memory assignments for your Docker VM.
 
 **Note for Windows users**: all scripts have been tested on macOS and Ubuntu.
 Although we think they should work on Windows, we have not tested it.
-
 
 ## Get this repo and download dependencies
 
