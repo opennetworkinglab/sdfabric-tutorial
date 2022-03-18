@@ -1,3 +1,8 @@
+<!--
+Copyright 2022-present Open Networking Foundation
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # WORK-IN-PROGRESS
 
 This tutorial is not ready to be used yet.
