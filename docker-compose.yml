@@ -1,0 +1,90 @@
+version: "3"
+# SPDX-FileCopyrightText: 2020-present Open Networking Foundation <info@opennetworking.org>
+# SPDX-License-Identifier: Apache-2.0
+
+services:
+  pfcp-agent:
+    image: ${PFCP_AGENT_IMAGE}
+    platform: linux/amd64
+    hostname: pfcp-agent
+    container_name: pfcp-agent
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./tmp:/tmp
+      - ./config/pfcp-agent/config.json:/config.json
+    entrypoint: "/bin/pfcpiface"
+    command: [ "-config", "/config.json"]
+    working_dir: /bin/
+    expose:
+      - 8805 # PFCP
+    ports:
+      - "8080:8080" # HTTP: REST API for slice meter configuration
+  mock-smf:
+    image: ${PFCPSIM_IMAGE}
+    platform: linux/amd64
+    hostname: mock-smf
+    container_name: mock-smf
+    tty: true
+    volumes:
+      - ./tmp:/tmp
+      - ./topo:/topo
+      - ./bin:/up4/bin
+  p4rt:
+    build:
+      context: ./topo
+      dockerfile: Dockerfile.p4rt
+    platform: linux/amd64
+    hostname: p4rt
+    container_name: p4rt
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./tmp:/tmp
+      - ../p4src/build/:/p4c-out/
+      - ./bin:/up4/bin
+    entrypoint: "/bin/bash"
+  mininet:
+    build:
+      context: ./topo
+      dockerfile: Dockerfile.mn
+      args:
+        - DBUF_IMAGE=${DBUF_IMAGE}
+        - MN_STRATUM_IMAGE=${MN_STRATUM_IMAGE}
+    platform: linux/amd64
+    hostname: mininet
+    container_name: mininet
+    privileged: true
+    tty: true
+    stdin_open: true
+    entrypoint: "/topo/mn-entrypoint.sh"
+    volumes:
+      - ./tmp:/tmp
+      - ./topo:/topo
+      - ./bin:/up4/bin
+      - ./tmp/pcaps:/pcaps
+    expose:
+      - 50001 # leaf1
+      - 50002 # leaf2
+      - 50003 # spine1
+      - 50004 # spine2
+    environment:
+      - PARALLEL_LINKS=${PARALLEL_LINKS}
+      - MN_SCRIPT=${MN_SCRIPT}
+  onos1:
+    # Tost image comes with latest trellis apps
+    image: ${ONOS_IMAGE}
+    platform: linux/amd64
+    hostname: onos1
+    container_name: onos1
+    ports:
+      - "8181:8181" # HTTP
+      - "8101:8101" # SSH (CLI)
+      - "51001:51001" # UP4 app's P4Runtime server
+      - "5005:5005" # Java debugger
+    volumes:
+      - ./tmp/onos1:/root/onos/apache-karaf-4.2.14/data/tmp
+    env_file:
+      - ${STC_ENV_FILE} # Includes ONOS_APPS
+    entrypoint: "./bin/onos-service"
+    command: [ "debug" ]
