@@ -95,11 +95,8 @@ the exercises, here's a quick reference:
 
 Click on the exercise name to see the instructions:
 
- 1. [Environment basics](./EXERCISE-1.md)
- 2. [Bridging and routing](./EXERCISE-2.md)
- 3. [P4-UPF](./EXERCISE-3.md)
- 4. [In-band Network Telemetry](./EXERCISE-4.md)
- 5. [BESS-UPF](./EXERCISE-5.md)
+ 1. [Tutorial environment](./EXERCISE-1.md)
+ 2. [Basic configurations](./EXERCISE-2.md)
 ## Solutions
 
 You can find solutions for each exercise in the [solution](solution) directory.

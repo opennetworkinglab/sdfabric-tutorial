@@ -21,8 +21,6 @@ class LeafSpine(Topo):
 
     def __init__(self, *args, **kwargs):
         Topo.__init__(self, *args, **kwargs)
-        # Extract parallelLinks option
-        parallelLinks = args[0]
 
         # Leaves
         # gRPC port 50001
@@ -63,15 +61,14 @@ class LeafSpine(Topo):
         self.addLink(pdn, leaf2)  # port 1
 
         # Switch Links
-        for _ in range(parallelLinks):
-            self.addLink(spine1, leaf1)
-            self.addLink(spine1, leaf2)
-            self.addLink(spine2, leaf1)
-            self.addLink(spine2, leaf2)
+        self.addLink(spine1, leaf1)
+        self.addLink(spine1, leaf2)
+        self.addLink(spine2, leaf1)
+        self.addLink(spine2, leaf2)
 
 
-def main(parallelLinks):
-    net = Mininet(topo=LeafSpine(parallelLinks), controller=None)
+def main():
+    net = Mininet(topo=LeafSpine(), controller=None)
     net.start()
     CLI(net)
     net.stop()
@@ -80,9 +77,7 @@ def main(parallelLinks):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='Mininet topology script for 2x2 fabric with stratum_bmv2 and IPv4 hosts')
-    parser.add_argument('-pl', '--parallel-links', type=int, default=1,
-                        help='change the number of parallel links between leaf and spine')
     args = parser.parse_args()
     setLogLevel('info')
 
-    main(args.parallel_links)
+    main()

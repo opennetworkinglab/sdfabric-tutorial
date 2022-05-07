@@ -42,6 +42,44 @@ class IPv4Host(Host):
         self.defaultIntf().updateIP = updateIP
 
 
+class TaggedIPv4Host(Host):
+    """VLAN-tagged host that can be configured with an IPv4 gateway
+    (default route).
+    """
+    vlanIntf = None
+
+    def config(self, mac=None, ip=None, defaultRoute=None, lo='up', gw=None,
+               vlan=None, **_params):
+        super(TaggedIPv4Host, self).config(mac, ip, defaultRoute, lo, **_params)
+        self.vlanIntf = "%s.%s" % (self.defaultIntf(), vlan)
+        # Replace default interface with a tagged one
+        self.cmd('ip -4 addr flush dev %s' % self.defaultIntf())
+        self.cmd('ip -6 addr flush dev %s' % self.defaultIntf())
+        self.cmd('ip -4 link add link %s name %s type vlan id %s' % (
+            self.defaultIntf(), self.vlanIntf, vlan))
+        self.cmd('ip -4 link set up %s' % self.vlanIntf)
+        self.cmd('ip -4 addr add %s dev %s' % (ip, self.vlanIntf))
+        if gw:
+            self.cmd('ip -4 route add default via %s' % gw)
+
+        self.defaultIntf().name = self.vlanIntf
+        self.nameToIntf[self.vlanIntf] = self.defaultIntf()
+
+        # Disable offload
+        for attr in ["rx", "tx", "sg"]:
+            cmd = "/sbin/ethtool --offload %s %s off" % (
+                self.defaultIntf(), attr)
+            self.cmd(cmd)
+
+        def updateIP():
+            return ip.split('/')[0]
+
+        self.defaultIntf().updateIP = updateIP
+
+    def terminate(self):
+        self.cmd('ip -4 link remove link %s' % self.vlanIntf)
+        super(TaggedIPv4Host, self).terminate()
+
 class DbufHost(IPv4Host):
 
     def __init__(self, name, inNamespace=False, **params):

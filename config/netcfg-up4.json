@@ -1,0 +1,13 @@
+{
+  "apps": {
+    "org.omecproject.up4": {
+      "up4": {
+        "devices": [
+          "device:leaf1",
+          "device:leaf2"
+        ],
+        "pscEncapEnabled": false
+      }
+    }
+  }
+}
