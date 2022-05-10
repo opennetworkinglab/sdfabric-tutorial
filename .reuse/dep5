@@ -1,0 +1,5 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+
+Files: *.json
+Copyright: 2022-present Intel Corporation
+License: Apache-2.0
