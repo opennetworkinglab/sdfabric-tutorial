@@ -15,11 +15,12 @@ ONOS_CURL := curl --fail -sSL --user onos:rocks --noproxy localhost
 .PHONY: $(SCENARIOS)
 
 start: ./tmp
+	$(info *** Starting all containers...)
 	docker compose up -d
 
 stop:
-	$(info *** Stopping ONOS and Mininet...)
-	docker compose down -t0
+	$(info *** Stopping all containers...)
+	docker compose down -t0 --remove-orphans
 
 restart: reset start
 
@@ -39,6 +40,9 @@ onos-log:
 
 onos-ui:
 	open http://localhost:8181/onos/ui
+
+pfcp-log:
+	docker compose logs -f pfcp-agent
 
 netcfg: NETCFG_JSON := ./config/netcfg-${TOPO}.json
 netcfg: _netcfg
@@ -70,9 +74,9 @@ reset:
 # 	TODO: make it work without sudo
 	-sudo rm -rf ./tmp
 
-mock-smf:
-	docker compose exec mock-smf /up4/bin/mock-smf.py pfcp-agent \
-		--pcap-file /tmp/mock-smf.pcap -vvv
+smf-sim:
+	docker compose exec smf-sim /up4/bin/smf-sim.py pfcp-agent \
+		--pcap-file /tmp/smf-sim.pcap -vvv
 
 up4-p4rt-sh:
 	docker compose exec p4rt \

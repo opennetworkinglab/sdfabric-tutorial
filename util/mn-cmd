@@ -1,0 +1,10 @@
+#!/bin/bash
+# SPDX-FileCopyrightText: 2022-present Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+if [ -z $1 ]; then
+  echo "usage: $0 host cmd [args...]"
+  exit 1
+fi
+
+docker exec -it mininet /mininet/host-cmd $@

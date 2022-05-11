@@ -8,9 +8,9 @@ import argparse
 from mininet.cli import CLI
 from mininet.log import setLogLevel
 from mininet.net import Mininet
-from mininet.node import Host
 from mininet.topo import Topo
 from stratum import StratumBmv2Switch
+
 from mn_lib import IPv4Host
 from mn_lib import TaggedIPv4Host
 
@@ -62,6 +62,11 @@ class TutorialTopo(Topo):
                           ip='172.16.4.1/24', gw='172.16.4.254')
         self.addLink(h3, leaf2)  # port 3
         self.addLink(h4, leaf2)  # port 4
+
+        # Emulated gNodeB (5G base station) attached to leaf 1
+        gnb = self.addHost('gnb', cls=IPv4Host, mac='00:00:00:00:99:00',
+                           ip='172.16.1.99/24', gw='172.16.1.254')
+        self.addLink(gnb, leaf1)  # port 7
 
 
 def main():

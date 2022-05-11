@@ -1,4 +1,27 @@
 {
+  "ports": {
+    "device:leaf1/7": {
+      "interfaces": [
+        {
+          "name": "leaf1-7-gnb",
+          "ips": [
+            "172.16.1.254/24"
+          ],
+          "vlan-untagged": 100
+        }
+      ]
+    }
+  },
+  "hosts": {
+    "00:00:00:00:00:99/None": {
+      "basic": {
+        "name": "gNodeB",
+        "locType": "grid",
+        "gridX": 250,
+        "gridY": 600
+      }
+    }
+  },
   "apps": {
     "org.omecproject.up4": {
       "up4": {
@@ -6,7 +29,7 @@
           "device:leaf1",
           "device:leaf2"
         ],
-        "pscEncapEnabled": false
+        "pscEncapEnabled": true
       }
     }
   }

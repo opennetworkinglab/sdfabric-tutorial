@@ -3,51 +3,9 @@ version: "3"
 # SPDX-License-Identifier: Apache-2.0
 
 services:
-  pfcp-agent:
-    image: ${PFCP_AGENT_IMAGE}
-    platform: linux/amd64
-    hostname: pfcp-agent
-    container_name: pfcp-agent
-    tty: true
-    stdin_open: true
-    volumes:
-      - ./tmp:/tmp
-      - ./config/pfcp-agent.json:/config.json
-    entrypoint: "/bin/pfcpiface"
-    command: [ "-config", "/config.json"]
-    working_dir: /bin/
-    expose:
-      - 8805 # PFCP
-    ports:
-      - "8080:8080" # HTTP: REST API for slice meter configuration
-  mock-smf:
-    image: ${PFCPSIM_IMAGE}
-    platform: linux/amd64
-    hostname: mock-smf
-    container_name: mock-smf
-    tty: true
-    volumes:
-      - ./tmp:/tmp
-      - ./topo:/topo
-      - ./bin:/up4/bin
-  p4rt:
-    build:
-      context: ./topo
-      dockerfile: Dockerfile.p4rt
-    platform: linux/amd64
-    hostname: p4rt
-    container_name: p4rt
-    tty: true
-    stdin_open: true
-    volumes:
-      - ./tmp:/tmp
-      - ../p4src/build/:/p4c-out/
-      - ./bin:/up4/bin
-    entrypoint: "/bin/bash"
   mininet:
     build:
-      context: ./topo
-      dockerfile: Dockerfile.mn
+      context: mininet
       args:
         - DBUF_IMAGE=${DBUF_IMAGE}
         - MN_STRATUM_IMAGE=${MN_STRATUM_IMAGE}
@@ -57,7 +15,7 @@ services:
     privileged: true
     tty: true
     stdin_open: true
-    entrypoint: "/topo/mn-entrypoint.sh"
+    entrypoint: "/mininet/mn-entrypoint.sh"
     volumes:
       - ./tmp:/tmp
       - ./topo:/topo
@@ -69,7 +27,7 @@ services:
       - 50003 # spine1
       - 50004 # spine2
     environment:
-      - MN_SCRIPT=/topo/topo-${TOPO}.py
+      - MN_SCRIPT=/mininet/topo-${TOPO}.py
   onos1:
     # Tost image comes with latest trellis apps
     image: ${ONOS_IMAGE}
@@ -87,3 +45,32 @@ services:
       - .env # Includes ONOS_APPS
     entrypoint: "./bin/onos-service"
     command: [ "debug" ]
+
+  # P4-UPF services
+  pfcp-agent:
+    image: ${PFCP_AGENT_IMAGE}
+    platform: linux/amd64
+    hostname: pfcp-agent
+    container_name: pfcp-agent
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./tmp:/tmp
+      - ./config/pfcp-agent.json:/config.json
+    entrypoint: "/bin/pfcpiface"
+    command: [ "-config", "/config.json" ]
+    working_dir: /bin/
+    expose:
+      - 8805 # PFCP
+    ports:
+      - "8080:8080" # HTTP: REST API for slice meter configuration
+  smf-sim:
+    image: ${PFCPSIM_IMAGE}
+    platform: linux/amd64
+    hostname: smf-sim
+    container_name: smf-sim
+    tty: true
+    volumes:
+      - ./tmp:/tmp
+      - ./topo:/topo
+      - ./bin:/up4/bin

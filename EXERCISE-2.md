@@ -84,7 +84,7 @@ Finally, the official SD-Fabric documentation is also available online:
 
 We will use a topology similar to previous exercises, however, instead of IPv6
 we will use IPv4 hosts. The topology file is located under
-[topo/topo-leafspine.py][topo-leafspine.py]. While the SD-Fabric apps support IPv6, the P4
+[mininet/topo-leafspine.py][topo-leafspine.py]. While the SD-Fabric apps support IPv6, the P4
 program does not, yet. Development of IPv6 support in `fabric.p4` is work in
 progress.
 
@@ -127,7 +127,7 @@ create untagged and tagged hosts.
 For example, for `h1a` attached to untagged port `leaf1-3`, we use the
 `IPv4Host` class:
 ```
-# Excerpt from topo/topo-leafspine.py
+# Excerpt from mininet/topo-leafspine.py
 h1a = self.addHost('h1a', cls=IPv4Host, mac="00:00:00:00:00:1A",
                    ip='172.16.1.1/24', gw='172.16.1.254')
 ```
@@ -602,7 +602,7 @@ You have completed the seventh exercise! You were able to use ONOS built-in
 SD-Fabric apps such as `segmentrouting` and the `fabric` pipeconf to configure
 forwarding in a 2x2 leaf-spine fabric of IPv4 hosts.
 
-[topo-leafspine.py]: topo/topo-leafspine.py
+[topo-leafspine.py]: mininet/topo-leafspine.py
 [netcfg-leafspine.json]: config/netcfg-leafspine.json
 [docker-compose.yml]: docker-compose.yml
 [pseudo-wire]: https://en.wikipedia.org/wiki/Pseudo-wire

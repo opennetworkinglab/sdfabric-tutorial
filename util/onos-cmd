@@ -1,0 +1,13 @@
+#!/bin/bash
+# SPDX-FileCopyrightText: 2022-present Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+if [ -z $1 ]; then
+  echo "usage: $0 cmd [args...]"
+  exit 1
+fi
+
+# Use sshpass to skip the password prompt
+docker run -it --rm --network host ictu/sshpass \
+  -procks ssh -o "UserKnownHostsFile=/dev/null" \
+  -o "StrictHostKeyChecking=no" -o LogLevel=ERROR -p 8101 onos@localhost "$@"
