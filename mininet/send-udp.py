@@ -1,4 +1,6 @@
 #!/usr/bin/python3
+# SPDX-FileCopyrightText: 2022-present Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
 
 # Script used in Exercise 8.
 # Send downlink packets to UE address.

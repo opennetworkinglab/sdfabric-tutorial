@@ -1,4 +1,6 @@
 #!/usr/bin/python3
+# SPDX-FileCopyrightText: 2022-present Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
 
 # Script used in Exercise 3 that sniffs packets and prints on screen whether
 # they are GTP encapsulated or not.
