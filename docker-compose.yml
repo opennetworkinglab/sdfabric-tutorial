@@ -15,19 +15,20 @@ services:
     privileged: true
     tty: true
     stdin_open: true
-    entrypoint: "/mininet/mn-entrypoint.sh"
+    entrypoint: "./mininet/mn-entrypoint.sh"
     volumes:
       - ./tmp:/tmp
       - ./topo:/topo
       - ./bin:/up4/bin
       - ./tmp/pcaps:/pcaps
+      - ./mininet:/mininet
     expose:
       - 50001 # leaf1
       - 50002 # leaf2
       - 50003 # spine1
       - 50004 # spine2
     environment:
-      - MN_SCRIPT=/mininet/topo-${TOPO}.py
+      - MN_SCRIPT=./mininet/topo-${TOPO}.py
   onos1:
     # Tost image comes with latest trellis apps
     image: ${ONOS_IMAGE}

@@ -3,19 +3,16 @@ SPDX-FileCopyrightText: 2022-present Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# Exercise 7: Basic configuration
-
-TODO update
+# Exercise 2: Basic configuration
 
 The goal of this exercise is to learn how to set up and configure an emulated
 SD-Fabric environment with a simple 2x2 topology.
 
 ## Background
 
-SD-Fabric is a set of built-in ONOS applications that provide the control plane
-for an IP fabric based on MPLS segment-routing. That is, similar in purpose to
-the app we have been developing in the previous exercise, but instead of using
-IPv6-based routing or SRv6, SD-Fabric uses MPLS labels to forward packets between
+SD-Fabric has a set of built-in ONOS applications that provide the control plane
+for an IP fabric based on MPLS segment-routing. That is,
+SD-Fabric uses MPLS labels to forward packets between
 leaf switches and across the spines.
 
 SD-Fabric apps are deployed in Tier-1 carrier networks, and for this reason they
@@ -23,18 +20,16 @@ are deemed production-grade. These apps provide an extensive feature set such
 as:
 
 * Carrier-oriented networking capabilities: from basic L2 and L3 forwarding, to
-  multicast, QinQ, pseudo-wires, integration with external control planes such
+  multicast, integration with external control planes such
   as BGP, OSPF, DHCP relay, etc.
 * Fault-tolerance and high-availability: as SD-Fabric is designed to take full
   advantage of the ONOS distributed core, e.g., to withstand controller
   failures. It also provides dataplane-level resiliency against link failures
   and switch failures (with paired leaves and dual-homed hosts). See figure
   below.
-* Single-pane-of-glass monitoring and troubleshooting, with dedicated tools such
-  as T3.
+* Single-pane-of-glass monitoring and troubleshooting
 
-
-![trellis-features](img/trellis-features.png)
+![sdfabric-redundancy](img/redundancy.png)
 
 SD-Fabric is made of several apps running on top of ONOS, the main one is
 `segmentrouting`, and its implementation can be found in the ONOS source tree:
@@ -48,7 +43,7 @@ to program the switches with the necessary forwarding rules. Because of this
 "one big IP router" abstraction, operators can independently scale the topology
 to add more capacity or ports by adding more leaves and spines.
 
-`segmentrouting` and other SD-Fabric apps use the ONOS FlowObjective API, which
+`segmentrouting` and other SD-Fabric apps use the ONOS Flow Objective API, which
 allow them to be pipeline-agnostic. As a matter of fact, SD-Fabric was initially
 designed to work with fixed-function switches exposing an OpenFlow agent (such
 as Broadcom Tomahawk, Trident2, and Qumran via the OF-DPA pipeline). However, in
@@ -57,17 +52,16 @@ the SD-Fabric apps, but instead providing a special ONOS pipeconf that brings in
 P4 program complemented by a set of drivers that among other things are
 responsible for translating flow objectives to the P4 program-specific tables.
 
-This P4 program is named `fabric.p4`. It's implementation along with the
-corresponding pipeconf drivers can be found in the ONOS source tree:
-[fabric-tna] (open on GitHub)
+This P4 program is named `fabric_v1model.p4`. It's implementation along with the
+corresponding pipeconf drivers can be found in the fabric-tna repository:
+[fabric-tna] (open on GitHub).
+This pipeconf currently works on the `stratum_bmv2` software switch.
+There is another P4 program named `fabric_tna.p4` that
+works on Intel Barefoot Tofino-based switches.
 
-This pipeconf currently works on the `stratum_bmv2` software switch as well as
-on Intel Barefoot Tofino-based switches (the [fabric-tofino] project provides
-instructions and scripts to create a Tofino-enabled pipeconf).
-
-We will come back to the details of `fabric.p4` in the next lab, for now, let's
-keep in mind that instead of building our own custom pipeconf, we will use one
-provided with ONOS.
+We will come back to the details of `fabric_v1model.p4` in the next lab, for now, let's
+keep in mind that instead of building our own custom pipeconf, we will use the
+default one comes with SD-Fabric.
 
 The goal of the exercise is to learn the SD-Fabric basics by writing a
 configuration in the form of a netcfg JSON file to set up bridging and
@@ -78,20 +72,19 @@ For a gentle overview of SD-Fabric, please check the online book
 <https://sdn.systemsapproach.org/trellis.html>
 
 Finally, the official SD-Fabric documentation is also available online:
-<https://docs.trellisfabric.org/>
+<https://docs.sd-fabric.org/>
 
 ### Topology
 
-We will use a topology similar to previous exercises, however, instead of IPv6
-we will use IPv4 hosts. The topology file is located under
+We will use the topology shown in the following diagram.
+The topology file is located under
 [mininet/topo-leafspine.py][topo-leafspine.py]. While the SD-Fabric apps support IPv6, the P4
-program does not, yet. Development of IPv6 support in `fabric.p4` is work in
+program does not, yet. Development of IPv6 support in `fabric_v1model.p4` is work in
 progress.
 
 ![topo-leafspine](img/topo-leafspine.png)
 
-Exactly like in previous exercises, the Mininet script [topo-leafspine.py] used here
-defines 4 IPv4 subnets:
+The Mininet script [topo-leafspine.py] used here defines 4 IPv4 subnets:
 
 * `172.16.1.0/24` with 3 hosts connected to `leaf1` (`h1a`, `h1b`, and `h1c`)
 * `172.16.2.0/24` with 1 hosts connected to `leaf1` (`h2`)
@@ -150,24 +143,16 @@ The JSON file in [config/netcfg-leafspine.json][netcfg-leafspine.json] includes 
 configuration for ONOS and the SD-Fabric apps to program switches to forward
 traffic between hosts of the topology described above.
 
-**NOTE**: this is a similar but different file then the one used in previous
-exercises. Notice the `-sr` suffix, where `sr` stands for `segmentrouting`, as
-this file contains the necessary configuration for such app to work.
+Take a look at the network config ([netcfg-leafspine.json])
+and try answering the following questions:
 
-Take a look at both the old file ([netcfg.json]) and the new one
-([netcfg-leafspine.json]), can you spot the differences? To help, try answering the
-following questions:
-
-* What is the pipeconf ID used for all 4 switches? Which
-  pipeconf ID did we use before? Why is it different?
-* In the new file, each device has a `"segmentrouting"` config block (JSON
-  subtree). Do you see any similarities with the previous file and the
-  `"fabricDeviceConfig"` block?
-* How come all `"fabricDeviceConfig"` blocks are gone in the new file?
-* Look at the `"interfaces"` config blocks, what has changed w.r.t. the old
-  file?
-* In the new file, why do the untagged interfaces have only one VLAN ID value,
+* What is the pipeconf ID used for all 4 switches?
+  Are the leaves using the same pipeconf as the spines?
+* Look at the `"interfaces"` config blocks,
+  how many tagged ports and untagged ports are there?
+* Why do the untagged interfaces have only one VLAN ID value,
   while the tagged ones can take many (JSON array)?
+* How many L2 bridging domains are there?
 * Is the `interfaces` block provided for all host-facing ports? Which ports are
   missing and which hosts are attached to those ports?
 
@@ -182,70 +167,53 @@ current environment:
 This command will stop ONOS and Mininet and remove any state associated with
 them.
 
-Re-start ONOS and Mininet, this time with the new IPv4 topology:
+Re-start ONOS and Mininet:
 
-**IMPORTANT:** please notice the `-v4` suffix!
-
-    $ make start-v4
+    $ make start
 
 Wait about 1 minute before proceeding with the next steps. This will
 give ONOS time to start all of its subsystems.
 
 ## 2. Load fabric pipeconf and segmentrouting
 
-Differently from previous exercises, instead of building and installing our own
-pipeconf and app, here we use built-in ones.
-
-Open up the ONOS CLI (`make onos-cli`) and activate the following apps:
-
-    onos> app activate fabric 
-    onos> app activate segmentrouting
-
-**NOTE:** The full ID for both apps is `org.onosproject.pipelines.fabric` and
-`org.onosproject.segmentrouting`, respectively. For convenience, when activating
-built-in apps using the ONOS CLI, you can specify just the last piece of the
-full ID (after the last dot.)
-
-**NOTE 2:** The `fabric` app has the minimal purpose of registering
-pipeconfs in the system. Different from `segmentrouting`, even if we
-call them both apps, `fabric` does not interact with the network in
-any way.
-
+Open up the ONOS CLI (`make onos-cli`) and verify the system is ready.
 #### Verify apps
 
 Verify that all apps have been activated successfully:
 
-    onos> apps -s -a
-    *  18 org.onosproject.drivers               2.2.7    Default Drivers
-    *  37 org.onosproject.protocols.grpc        2.2.7    gRPC Protocol Subsystem
-    *  38 org.onosproject.protocols.gnmi        2.2.7    gNMI Protocol Subsystem
-    *  39 org.onosproject.generaldeviceprovider 2.2.7    General Device Provider
-    *  40 org.onosproject.protocols.gnoi        2.2.7    gNOI Protocol Subsystem
-    *  41 org.onosproject.drivers.gnoi          2.2.7    gNOI Drivers
-    *  42 org.onosproject.route-service         2.2.7    Route Service Server
-    *  43 org.onosproject.mcast                 2.2.7    Multicast traffic control
-    *  44 org.onosproject.portloadbalancer      2.2.7    Port Load Balance Service
-    *  45 org.onosproject.segmentrouting        2.2.7    Segment Routing
-    *  53 org.onosproject.hostprovider          2.2.7    Host Location Provider
-    *  54 org.onosproject.lldpprovider          2.2.7    LLDP Link Provider
-    *  64 org.onosproject.protocols.p4runtime   2.2.7    P4Runtime Protocol Subsystem
-    *  65 org.onosproject.p4runtime             2.2.7    P4Runtime Provider
-    *  99 org.onosproject.drivers.gnmi          2.2.7    gNMI Drivers
-    * 100 org.onosproject.drivers.p4runtime     2.2.7    P4Runtime Drivers
-    * 101 org.onosproject.pipelines.basic       2.2.7    Basic Pipelines
-    * 102 org.onosproject.drivers.stratum       2.2.7    Stratum Drivers
-    * 103 org.onosproject.drivers.bmv2          2.2.7    BMv2 Drivers
-    * 111 org.onosproject.pipelines.fabric      2.2.7    Fabric Pipeline
-    * 164 org.onosproject.gui2                  2.2.7    ONOS GUI2
+    onos@root > apps -s -a
+    *   3 org.onosproject.route-service        2.5.8.SNAPSHOT Route Service Server
+    *   5 org.onosproject.protocols.grpc       2.5.8.SNAPSHOT gRPC Protocol Subsystem
+    *   6 org.onosproject.protocols.gnmi       2.5.8.SNAPSHOT gNMI Protocol Subsystem
+    *   7 org.onosproject.generaldeviceprovider 2.5.8.SNAPSHOT General Device Provider
+    *   8 org.onosproject.protocols.gnoi       2.5.8.SNAPSHOT gNOI Protocol Subsystem
+    *   9 org.onosproject.drivers.gnoi         2.5.8.SNAPSHOT gNOI Drivers
+    *  10 org.onosproject.protocols.p4runtime  2.5.8.SNAPSHOT P4Runtime Protocol Subsystem
+    *  11 org.onosproject.p4runtime            2.5.8.SNAPSHOT P4Runtime Provider
+    *  12 org.onosproject.drivers              2.5.8.SNAPSHOT Default Drivers
+    *  13 org.onosproject.drivers.p4runtime    2.5.8.SNAPSHOT P4Runtime Drivers
+    *  14 org.onosproject.pipelines.basic      2.5.8.SNAPSHOT Basic Pipelines
+    *  17 org.onosproject.hostprovider         2.5.8.SNAPSHOT Host Location Provider
+    *  19 org.onosproject.drivers.gnmi         2.5.8.SNAPSHOT gNMI Drivers
+    *  20 org.onosproject.drivers.stratum      2.5.8.SNAPSHOT Stratum Drivers
+    *  22 org.onosproject.drivers.bmv2         2.5.8.SNAPSHOT BMv2 Drivers
+    *  23 org.onosproject.lldpprovider         2.5.8.SNAPSHOT LLDP Link Provider
+    *  24 org.onosproject.portloadbalancer     2.5.8.SNAPSHOT Port Load Balance Service
+    *  27 org.onosproject.netcfghostprovider   2.5.8.SNAPSHOT Network Config Host Provider
+    *  29 org.onosproject.gui2                 2.5.8.SNAPSHOT ONOS GUI2
+    *  30 org.onosproject.mcast                2.5.8.SNAPSHOT Multicast traffic control
+    *  32 org.stratumproject.fabric-tna        1.2.0.SNAPSHOT Fabric-TNA Pipeconf
+    *  33 org.onosproject.segmentrouting       3.3.0.SNAPSHOT Trellis Control App
+    *  34 org.omecproject.up4                  1.2.0.SNAPSHOT UP4
 
-Verify that you have the above 20 apps active in your ONOS instance. If you are
-wondering why so many apps, remember from EXERCISE 3 that the ONOS container in
+Verify that you have the above 23 apps active in your ONOS instance. If you are
+wondering why so many apps, remember from EXERCISE 1 that the ONOS container in
 [docker-compose.yml] is configured to pass the environment variable `ONOS_APPS`
 which defines built-in apps to load during startup.
 
 In our case this variable has value:
 
-    ONOS_APPS=gui2,drivers.bmv2,lldpprovider,hostprovider
+    ONOS_APPS=gui2,drivers.bmv2,lldpprovider,hostprovider,org.stratumproject.fabric-tna,segmentrouting,netcfghostprovider,org.omecproject.up4
 
 Moreover, `segmentrouting` requires other apps as dependencies, such as
 `route-service`, `mcast`, and `portloadbalancer`. The combination of all these
@@ -253,56 +221,50 @@ apps (and others that we do not need in this exercise) is what makes SD-Fabric.
 
 #### Verify pipeconfs
 
-Verify that the `fabric` pipeconfs have been registered successfully:
+Verify that the `fabric.bmv2` pipeconfs have been registered successfully:
 
-    onos> pipeconfs
-    id=org.onosproject.pipelines.fabric-full, behaviors=[PortStatisticsDiscovery, PiPipelineInterpreter, Pipeliner, IntProgrammable], extensions=[P4_INFO_TEXT, BMV2_JSON, CPU_PORT_TXT]
-    id=org.onosproject.pipelines.int, behaviors=[PiPipelineInterpreter, Pipeliner, PortStatisticsDiscovery, IntProgrammable], extensions=[P4_INFO_TEXT, BMV2_JSON]
-    id=org.onosproject.pipelines.fabric-spgw-int, behaviors=[PortStatisticsDiscovery, PiPipelineInterpreter, Pipeliner, IntProgrammable], extensions=[P4_INFO_TEXT, BMV2_JSON, CPU_PORT_TXT]
-    id=org.onosproject.pipelines.fabric, behaviors=[PortStatisticsDiscovery, PiPipelineInterpreter, Pipeliner], extensions=[P4_INFO_TEXT, BMV2_JSON, CPU_PORT_TXT]
-    id=org.onosproject.pipelines.fabric-bng, behaviors=[PortStatisticsDiscovery, PiPipelineInterpreter, Pipeliner, BngProgrammable], extensions=[P4_INFO_TEXT, BMV2_JSON, CPU_PORT_TXT]
-    id=org.onosproject.pipelines.fabric-spgw, behaviors=[PortStatisticsDiscovery, PiPipelineInterpreter, Pipeliner], extensions=[P4_INFO_TEXT, BMV2_JSON, CPU_PORT_TXT]
-    id=org.onosproject.pipelines.fabric-int, behaviors=[PortStatisticsDiscovery, PiPipelineInterpreter, Pipeliner, IntProgrammable], extensions=[P4_INFO_TEXT, BMV2_JSON, CPU_PORT_TXT]
-    id=org.onosproject.pipelines.basic, behaviors=[PiPipelineInterpreter, Pipeliner, PortStatisticsDiscovery], extensions=[P4_INFO_TEXT, BMV2_JSON]
+    onos@root > pipeconfs | grep bmv2
+    id=org.stratumproject.fabric-upf.bmv2, behaviors=[PiPipelineInterpreter, Pipeliner, UpfProgrammable], extensions=[P4_INFO_TEXT, BMV2_JSON]
+    id=org.stratumproject.fabric-int.bmv2, behaviors=[PiPipelineInterpreter, Pipeliner, IntProgrammable], extensions=[P4_INFO_TEXT, BMV2_JSON]
+    id=org.stratumproject.fabric-upf-int.bmv2, behaviors=[PiPipelineInterpreter, Pipeliner, IntProgrammable, UpfProgrammable], extensions=[P4_INFO_TEXT, BMV2_JSON]
+    id=org.stratumproject.fabric.bmv2, behaviors=[PiPipelineInterpreter, Pipeliner], extensions=[P4_INFO_TEXT, BMV2_JSON]
 
-Wondering why so many pipeconfs? `fabric.p4` comes in different "profiles", used
+Wondering why so many pipeconfs? `fabric_v1model.p4` comes in different "profiles", used
 to enable different dataplane features in the pipeline. We'll come back
 to the differences between different profiles in the next exercise, for now
-let's make sure the basic one `org.onosproject.pipelines.fabric` is loaded.
-This is the one we need to program all four switches, as specified in
+let's make sure `org.stratumproject.fabric.bmv2` and `org.stratumproject.fabric-upf.bmv2` are loaded.
+These are the pipeconfs we need to program all four switches, as specified in
 [netcfg-leafspine.json].
 
-#### Increase reconciliation frequency (optional, but recommended)
+#### Verify reconciliation frequency
 
 Run the following commands in the ONOS CLI:
 
-    onos> cfg set org.onosproject.net.flow.impl.FlowRuleManager fallbackFlowPollFrequency 4
-    onos> cfg set org.onosproject.net.group.impl.GroupManager fallbackGroupPollFrequency 3
+    onos> cfg get org.onosproject.net.flow.impl.FlowRuleManager fallbackFlowPollFrequency
+    onos> cfg get org.onosproject.net.group.impl.GroupManager fallbackGroupPollFrequency
 
-This command tells the ONOS core to modify the period (in seconds) between
+This command gets the ONOS component config value of the period (in seconds) between
 reconciliation checks. Reconciliation is used to verify that switches have the
 expected forwarding state and to correct any inconsistencies, i.e., writing any
 pending flow rule and group. When running ONOS and the emulated switches in the
 same machine (especially those with low CPU/memory), it might happen that
 P4Runtime write requests time out because the system is overloaded.
 
-The default reconciliation period is 30 seconds, the above commands set it to 4
+The default reconciliation period is 30 seconds, but SD-Fabric has customized the value to 4
 seconds for flow rules, and 3 seconds for groups.
 
 ## 3. Push netcfg-leafspine.json to ONOS
 
 On a terminal window, type:
 
-**IMPORTANT**: please notice the `-sr` suffix!
+    $ make netcfg
 
-    $ make netcfg-sr
-
-As we learned in EXERCISE 3, this command will push [netcfg-leafspine.json] to ONOS,
+This command will push [netcfg-leafspine.json] to ONOS,
 triggering discovery and configuration of the 4 switches. Moreover, since the
 file specifies a `segmentrouting` config block for each switch, this will
 instruct the `segmentrouting` app in ONOS to take control of all of them, i.e.,
 the app will start generating flow objectives that will be translated into flow
-rules for the `fabric.p4` pipeline.
+rules for the `fabric_v1model.p4` pipeline.
 
 Check the ONOS log (`make onos-log`). You should see numerous messages from
 components such as `TopologyHandler`, `LinkHandler`, `SegmentRoutingManager`,
@@ -311,14 +273,14 @@ etc., signaling that switches have been discovered and programmed.
 You should also see warning messages such as:
 
 ```
-[ForwardingObjectiveTranslator] Cannot translate DefaultForwardingObjective: unsupported forwarding function type 'PSEUDO_WIRE'...
+[ForwardingObjectiveTranslator] Cannot translate DefaultForwardingObjective: unsupported forwarding function type 'org.stratumproject.fabric.tna.behaviour.pipeliner.ForwardingFunctionType@52b0744f...
 ```
 
-This is normal, as not all SD-Fabric features are supported in `fabric.p4`. One of
+This is normal, as not all SD-Fabric features are supported in `fabric_v1model.p4`. One of
 such feature is [pseudo-wire] (L2 tunneling across the L3 fabric). You can
 ignore that.
 
-This error is generated by the Pipeliner driver behavior of the `fabric`
+This error is generated by the Pipeliner driver behavior of the `fabric.bmv2`
 pipeconf, which recognizes that the given flow objective cannot be translated.
 
 #### Check configuration in ONOS
@@ -353,41 +315,41 @@ Another interesting command is `sr-ecmp-spg`, which lists all computed ECMP
 shortest-path graphs:
 
     onos> sr-ecmp-spg 
-    Root Device: device:leaf1 ECMP Paths: 
-      Paths from device:leaf1 to device:spine1
-           ==  : device:leaf1/1 -> device:spine1/1
-      Paths from device:leaf1 to device:spine2
-           ==  : device:leaf1/2 -> device:spine2/1
-      Paths from device:leaf1 to device:leaf2
-           ==  : device:leaf1/2 -> device:spine2/1 : device:spine2/2 -> device:leaf2/2
-           ==  : device:leaf1/1 -> device:spine1/1 : device:spine1/2 -> device:leaf2/1
+    Root Device: device:leaf1 ECMP Paths:
+    Paths from device:leaf1 to device:spine1
+        ==  : device:leaf1/[leaf1-eth1](1) -> device:spine1/[spine1-eth1](1)
+    Paths from device:leaf1 to device:spine2
+        ==  : device:leaf1/[leaf1-eth2](2) -> device:spine2/[spine2-eth1](1)
+    Paths from device:leaf1 to device:leaf2
+        ==  : device:leaf1/[leaf1-eth1](1) -> device:spine1/[spine1-eth1](1) : device:spine1/[spine1-eth2](2) -> device:leaf2/[leaf2-eth1](1)
+        ==  : device:leaf1/[leaf1-eth2](2) -> device:spine2/[spine2-eth1](1) : device:spine2/[spine2-eth2](2) -> device:leaf2/[leaf2-eth2](2)
 
-    Root Device: device:spine1 ECMP Paths: 
-      Paths from device:spine1 to device:leaf1
-           ==  : device:spine1/1 -> device:leaf1/1
-      Paths from device:spine1 to device:spine2
-           ==  : device:spine1/2 -> device:leaf2/1 : device:leaf2/2 -> device:spine2/2
-           ==  : device:spine1/1 -> device:leaf1/1 : device:leaf1/2 -> device:spine2/1
-      Paths from device:spine1 to device:leaf2
-           ==  : device:spine1/2 -> device:leaf2/1
+    Root Device: device:spine1 ECMP Paths:
+    Paths from device:spine1 to device:leaf1
+        ==  : device:spine1/[spine1-eth1](1) -> device:leaf1/[leaf1-eth1](1)
+    Paths from device:spine1 to device:spine2
+        ==  : device:spine1/[spine1-eth2](2) -> device:leaf2/[leaf2-eth1](1) : device:leaf2/[leaf2-eth2](2) -> device:spine2/[spine2-eth2](2)
+        ==  : device:spine1/[spine1-eth1](1) -> device:leaf1/[leaf1-eth1](1) : device:leaf1/[leaf1-eth2](2) -> device:spine2/[spine2-eth1](1)
+    Paths from device:spine1 to device:leaf2
+        ==  : device:spine1/[spine1-eth2](2) -> device:leaf2/[leaf2-eth1](1)
 
-    Root Device: device:spine2 ECMP Paths: 
-      Paths from device:spine2 to device:leaf1
-           ==  : device:spine2/1 -> device:leaf1/2
-      Paths from device:spine2 to device:spine1
-           ==  : device:spine2/1 -> device:leaf1/2 : device:leaf1/1 -> device:spine1/1
-           ==  : device:spine2/2 -> device:leaf2/2 : device:leaf2/1 -> device:spine1/2
-      Paths from device:spine2 to device:leaf2
-           ==  : device:spine2/2 -> device:leaf2/2
+    Root Device: device:spine2 ECMP Paths:
+    Paths from device:spine2 to device:leaf1
+        ==  : device:spine2/[spine2-eth1](1) -> device:leaf1/[leaf1-eth2](2)
+    Paths from device:spine2 to device:spine1
+        ==  : device:spine2/[spine2-eth1](1) -> device:leaf1/[leaf1-eth2](2) : device:leaf1/[leaf1-eth1](1) -> device:spine1/[spine1-eth1](1)
+        ==  : device:spine2/[spine2-eth2](2) -> device:leaf2/[leaf2-eth2](2) : device:leaf2/[leaf2-eth1](1) -> device:spine1/[spine1-eth2](2)
+    Paths from device:spine2 to device:leaf2
+        ==  : device:spine2/[spine2-eth2](2) -> device:leaf2/[leaf2-eth2](2)
 
-    Root Device: device:leaf2 ECMP Paths: 
-      Paths from device:leaf2 to device:leaf1
-           ==  : device:leaf2/1 -> device:spine1/2 : device:spine1/1 -> device:leaf1/1
-           ==  : device:leaf2/2 -> device:spine2/2 : device:spine2/1 -> device:leaf1/2
-      Paths from device:leaf2 to device:spine1
-           ==  : device:leaf2/1 -> device:spine1/2
-      Paths from device:leaf2 to device:spine2
-           ==  : device:leaf2/2 -> device:spine2/2
+    Root Device: device:leaf2 ECMP Paths:
+    Paths from device:leaf2 to device:leaf1
+        ==  : device:leaf2/[leaf2-eth1](1) -> device:spine1/[spine1-eth2](2) : device:spine1/[spine1-eth1](1) -> device:leaf1/[leaf1-eth1](1)
+        ==  : device:leaf2/[leaf2-eth2](2) -> device:spine2/[spine2-eth2](2) : device:spine2/[spine2-eth1](1) -> device:leaf1/[leaf1-eth2](2)
+    Paths from device:leaf2 to device:spine1
+        ==  : device:leaf2/[leaf2-eth1](1) -> device:spine1/[spine1-eth2](2)
+    Paths from device:leaf2 to device:spine2
+        ==  : device:leaf2/[leaf2-eth2](2) -> device:spine2/[spine2-eth2](2)
 
 These graphs are used by `segmentrouting` to program flow rules and groups
 (action selectors) in `fabric.p4`, needed to load balance traffic across
@@ -402,10 +364,10 @@ You should get an empty output.
 Verify that all initial flows and groups have be programmed successfully:
 
     onos> flows -c added
-    deviceId=device:leaf1, flowRuleCount=52
-    deviceId=device:spine1, flowRuleCount=28
-    deviceId=device:spine2, flowRuleCount=28
-    deviceId=device:leaf2, flowRuleCount=36
+    deviceId=device:leaf1, flowRuleCount=80
+    deviceId=device:spine1, flowRuleCount=42
+    deviceId=device:spine2, flowRuleCount=42
+    deviceId=device:leaf2, flowRuleCount=54
     onos> groups -c added
     deviceId=device:leaf1, groupCount=5
     deviceId=device:leaf2, groupCount=3
@@ -559,7 +521,7 @@ blocks to enable connectivity for `h3` and `h4`:
    so, look at the config for other ports as a reference, but make sure to
    provide the right IPv4 gateway address, subnet, and VLAN configuration
    described at the beginning of this document.
-4. When done, push the updated file to ONOS using `make netcfg-sr`.
+4. When done, push the updated file to ONOS using `make netcfg`.
 5. Verify that the two new interface configs show up when using the ONOS
    CLI (`onos> interfaces`).
 6. If you don't see the new interfaces in the ONOS CLI, verify the ONOS log
@@ -583,23 +545,25 @@ Let's try to ping the corresponding gateway address from `h3` and `h4`:
     64 bytes from 172.16.4.254: icmp_seq=3 ttl=64 time=22.0 ms
     ...
 
-At this point, ping between all hosts should work. You can try that using the
-special `pingall` command in the Mininet CLI:
+At this point, ping between all hosts should work except `gnb`,
+which is a mobile component that we are going to explain in the next exercise.
+You can try that using the special `pingall` command in the Mininet CLI:
 
     mininet> pingall
     *** Ping: testing ping reachability
-    h1a -> h1b h1c h2 h3 h4 
-    h1b -> h1a h1c h2 h3 h4 
-    h1c -> h1a h1b h2 h3 h4 
-    h2 -> h1a h1b h1c h3 h4 
-    h3 -> h1a h1b h1c h2 h4 
-    h4 -> h1a h1b h1c h2 h3 
-    *** Results: 0% dropped (30/30 received)
+    gnb -> X X X X X X
+    h1a -> X h1b h1c h2 h3 h4
+    h1b -> X h1a h1c h2 h3 h4
+    h1c -> X h1a h1b h2 h3 h4
+    h2 -> X h1a h1b h1c h3 h4
+    h3 -> X h1a h1b h1c h2 h4
+    h4 -> X h1a h1b h1c h2 h3
+    *** Results: 28% dropped (30/42 received)
 
 ## Congratulations!
 
 You have completed the seventh exercise! You were able to use ONOS built-in
-SD-Fabric apps such as `segmentrouting` and the `fabric` pipeconf to configure
+SD-Fabric apps such as `segmentrouting` and the `fabric.bmv2` pipeconf to configure
 forwarding in a 2x2 leaf-spine fabric of IPv4 hosts.
 
 [topo-leafspine.py]: mininet/topo-leafspine.py
