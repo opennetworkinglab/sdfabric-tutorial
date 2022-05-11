@@ -1,5 +1,5 @@
 <!--
-Copyright 2022-present Open Networking Foundation
+SPDX-FileCopyrightText: 2022-present Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 -->
 
