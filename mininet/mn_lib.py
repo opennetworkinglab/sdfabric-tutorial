@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2020 Open Networking Foundation <info@opennetworking.org>
+# SPDX-FileCopyrightText: 2022-present Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
 
 from mininet.node import Host, Node

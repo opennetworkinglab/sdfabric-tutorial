@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2022-present Intel Corporation
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # Exercise 7: Basic configuration
 
 TODO update

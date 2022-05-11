@@ -2,6 +2,7 @@
   "devices": {
     "device:leaf1": {
       "basic": {
+        "name": "leaf1",
         "managementAddress": "grpc://mininet:50001?device_id=1",
         "driver": "stratum-bmv2",
         "pipeconf": "org.stratumproject.fabric-upf.bmv2",
@@ -10,7 +11,6 @@
         "gridY": 600
       },
       "segmentrouting": {
-        "name": "leaf1",
         "ipv4NodeSid": 101,
         "ipv4Loopback": "192.168.1.1",
         "routerMac": "00:AA:00:00:00:01",
@@ -20,6 +20,7 @@
     },
     "device:leaf2": {
       "basic": {
+        "name": "leaf2",
         "managementAddress": "grpc://mininet:50002?device_id=1",
         "driver": "stratum-bmv2",
         "pipeconf": "org.stratumproject.fabric-upf.bmv2",
@@ -28,7 +29,6 @@
         "gridY": 600
       },
       "segmentrouting": {
-        "name": "leaf2",
         "ipv4NodeSid": 102,
         "ipv4Loopback": "192.168.1.2",
         "routerMac": "00:AA:00:00:00:02",
@@ -38,6 +38,7 @@
     },
     "device:spine1": {
       "basic": {
+        "name": "spine1",
         "managementAddress": "grpc://mininet:50003?device_id=1",
         "driver": "stratum-bmv2",
         "pipeconf": "org.stratumproject.fabric.bmv2",
@@ -46,7 +47,6 @@
         "gridY": 400
       },
       "segmentrouting": {
-        "name": "spine1",
         "ipv4NodeSid": 201,
         "ipv4Loopback": "192.168.2.1",
         "routerMac": "00:BB:00:00:00:01",
@@ -56,6 +56,7 @@
     },
     "device:spine2": {
       "basic": {
+        "name": "spine2",
         "managementAddress": "grpc://mininet:50004?device_id=1",
         "driver": "stratum-bmv2",
         "pipeconf": "org.stratumproject.fabric.bmv2",
@@ -64,7 +65,6 @@
         "gridY": 400
       },
       "segmentrouting": {
-        "name": "spine2",
         "ipv4NodeSid": 202,
         "ipv4Loopback": "192.168.2.2",
         "routerMac": "00:BB:00:00:00:02",
