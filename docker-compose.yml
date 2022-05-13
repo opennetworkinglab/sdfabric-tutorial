@@ -15,12 +15,10 @@ services:
     privileged: true
     tty: true
     stdin_open: true
-    entrypoint: "/mininet/mn-entrypoint.sh"
+    entrypoint: "/mininet/entrypoint.sh"
     volumes:
       - ./tmp:/tmp
-      - ./topo:/topo
-      - ./bin:/up4/bin
-      - ./tmp/pcaps:/pcaps
+      - ./mininet:/mininet
     expose:
       - 50001 # leaf1
       - 50002 # leaf2
@@ -48,6 +46,8 @@ services:
 
   # P4-UPF services
   pfcp-agent:
+    profiles:
+      - upf
     image: ${PFCP_AGENT_IMAGE}
     platform: linux/amd64
     hostname: pfcp-agent
@@ -65,6 +65,8 @@ services:
     ports:
       - "8080:8080" # HTTP: REST API for slice meter configuration
   smf-sim:
+    profiles:
+      - upf
     image: ${PFCPSIM_IMAGE}
     platform: linux/amd64
     hostname: smf-sim

@@ -18,6 +18,10 @@ start: ./tmp
 	$(info *** Starting all containers...)
 	docker compose up -d
 
+start-upf: ./tmp
+	$(info *** Starting all containers...)
+	docker compose --profile upf up -d
+
 stop:
 	$(info *** Stopping all containers...)
 	docker compose down -t0 --remove-orphans
