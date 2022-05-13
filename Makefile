@@ -15,11 +15,11 @@ ONOS_CURL := curl --fail -sSL --user onos:rocks --noproxy localhost
 .PHONY: $(SCENARIOS)
 
 start: ./tmp
-	$(info *** Starting all containers...)
+	$(info *** Starting ONOS and mininet...)
 	docker compose up -d
 
 start-upf: ./tmp
-	$(info *** Starting all containers...)
+	$(info *** Starting UPF containers...)
 	docker compose --profile upf up -d
 
 stop:
