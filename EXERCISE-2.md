@@ -482,6 +482,9 @@ For example, to dump packets out of the `h2` main interface:
 
     $ util/mn-pcap h2
 
+You should notice that packets going in to and out from h2 are tagged with VLAN 200.
+![exercise-2-wireshark](img/exercise-2-wireshark.png)
+
 ## 6. Add missing interface config
 
 Start a ping from `h3` to any other host, for example `h2`:
@@ -546,7 +549,7 @@ Let's try to ping the corresponding gateway address from `h3` and `h4`:
     ...
 
 At this point, ping between all hosts should work except `gnb`,
-which is a mobile component that we are going to explain in the next exercise.
+which is a mobile component that we are going to set up in the next exercise.
 You can try that using the special `pingall` command in the Mininet CLI:
 
     mininet> pingall
