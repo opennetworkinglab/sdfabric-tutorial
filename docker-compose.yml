@@ -18,6 +18,9 @@ services:
     entrypoint: "/mininet/entrypoint.sh"
     volumes:
       - ./tmp:/tmp
+      - ./topo:/topo
+      - ./bin:/up4/bin
+      - ./tmp/pcaps:/pcaps
       - ./mininet:/mininet
     expose:
       - 50001 # leaf1

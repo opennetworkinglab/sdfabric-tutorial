@@ -15,7 +15,7 @@ file=${iface}.pcap
 set -e
 
 echo "*** Starting tcpdump on ${iface}... Ctrl-c to stop capture"
-echo "*** Pcap file will be written in ngsdn-tutorial/tmp/${file}"
+echo "*** Pcap file will be written in ./tmp/${file}"
 docker exec -it mininet /mininet/host-cmd $1 tcpdump -i $1-eth0 -w /tmp/"${file}"
 
 if [ -x "$(command -v wireshark)" ]; then
