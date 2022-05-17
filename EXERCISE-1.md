@@ -483,7 +483,7 @@ For example, to dump packets out of the `h2` main interface:
     $ util/mn-pcap h2
 
 You should notice that packets going in to and out from h2 are tagged with VLAN 200.
-![exercise-2-wireshark](img/exercise-2-wireshark.png)
+![exercise-2-wireshark](img/exercise-1-wireshark.png)
 
 ## 6. Add missing interface config
 
