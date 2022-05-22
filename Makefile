@@ -78,9 +78,9 @@ reset:
 # 	TODO: make it work without sudo
 	-sudo rm -rf ./tmp
 
-smf-sim:
-	docker compose exec smf-sim /up4/bin/smf-sim.py pfcp-agent \
-		--pcap-file /tmp/smf-sim.pcap -vvv
+pfcp-sim:
+	docker compose exec pfcp-sim /up4/bin/pfcp-sim.py pfcp-agent \
+		--pcap-file /tmp/pfcp-sim.pcap -vvv
 
 up4-p4rt-sh:
 	docker compose exec p4rt \

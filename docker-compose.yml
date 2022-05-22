@@ -55,25 +55,22 @@ services:
     platform: linux/amd64
     hostname: pfcp-agent
     container_name: pfcp-agent
-    tty: true
-    stdin_open: true
     volumes:
       - ./tmp:/tmp
-      - ./config/pfcp-agent.json:/config.json
+      - ./config/pfcp-agent.json:/config/pfcp-agent.json
     entrypoint: "/bin/pfcpiface"
-    command: [ "-config", "/config.json" ]
-    working_dir: /bin/
+    command: [ "-config", "/config/pfcp-agent.json" ]
     expose:
       - 8805 # PFCP
     ports:
       - "8080:8080" # HTTP: REST API for slice meter configuration
-  smf-sim:
+  pfcp-sim:
     profiles:
       - upf
     image: ${PFCPSIM_IMAGE}
     platform: linux/amd64
-    hostname: smf-sim
-    container_name: smf-sim
+    hostname: pfcp-sim
+    container_name: pfcp-sim
     tty: true
     volumes:
       - ./tmp:/tmp
