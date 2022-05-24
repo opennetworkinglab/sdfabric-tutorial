@@ -43,6 +43,7 @@ least the double of resources.
 
 **Note for macOS users**: if you are using Docker Desktop for Mac, make sure to
 adjust the CPU and memory assignments for your Docker VM.
+We don't support M1 Mac yet since there is a known connectivity issue.
 
 **Note for Windows users**: all scripts have been tested on macOS and Ubuntu.
 Although we think they should work on Windows, we have not tested it.
@@ -61,17 +62,13 @@ step ahead of the tutorial, with a reliable Internet connection.
 
 ## Repo structure
 
-**TODO: update**
-
 This repo is structured as follows:
 
- * `p4src/` P4 implementation
- * `yang/` Yang model used in exercise 2
- * `app/` custom ONOS app Java implementation
- * `mininet/` Mininet script to emulate a 2x2 leaf-spine fabric topology of
+ - `config/` Configuration files for various sub-components
+ - `mininet/` Mininet script to emulate a 2x2 leaf-spine fabric topology of
    `stratum_bmv2` devices
- * `util/` Utility scripts
- * `ptf/` P4 data plane unit tests based on Packet Test Framework (PTF)
+ - `solution/` Solutions for the exercises
+ - `util/` Utility scripts
 
 ## Tutorial commands
 
@@ -79,24 +76,28 @@ To facilitate working on the exercises, we provide a set of make-based commands
 to control the different aspects of the tutorial. Commands will be introduced in
 the exercises, here's a quick reference:
 
-| Make command      | Description                                                                |
-|-------------------|----------------------------------------------------------------------------|
-| `make deps`       | Pull and build all required dependencies                                   |
-| `make start`      | Start SD-Fabric containers                                                 |
-| `make stop`       | Stop all containers                                                        |
-| `make restart`    | Restart containers clearing any previous state                             |
-| `make onos-cli`   | Access the ONOS CLI (password: `rocks`, Ctrl-D to exit)                    |
-| `make onos-log1`  | Show the log of ONOS instance 1 (replace with 2 and 3 for other instances) |
-| `make mn-cli`     | Access the Mininet CLI (Ctrl-D to exit)                                    |
-| `make mn-log`     | Show the Mininet log (i.e., the CLI output)                                |
-| `make netcfg`     | Push netcfg.json file (network config) to ONOS                             |
+| Make command        | Description                                            |
+|---------------------|------------------------------------------------------- |
+| `make deps`         | Pull and build all required dependencies               |
+| `make start`        | Start Mininet and ONOS containers                      |
+| `make start-upf`    | Start `pfcp-agent` and `smf-sim`
+| `make stop`         | Stop all containers                                    |
+| `make restart`      | Restart containers clearing any previous state         |
+| `make reset`        | Reset the tutorial environment                         |
+| `make onos-cli`     | Access the ONOS CLI (password: `rocks`, Ctrl-D to exit)|
+| `make onos-log`     | Show the ONOS log                                      |
+| `make mn-cli`       | Access the Mininet CLI (Ctrl-D to exit)                |
+| `make mn-log`       | Show the Mininet log (i.e., the CLI output)            |
+| `make mn-pcap`      | Dump packet on a particular Mininet host               |
+| `make netcfg`       | Push netcfg.json file (network config) to ONOS         |
 
 ## Exercises
 
 Click on the exercise name to see the instructions:
 
- 1. [Tutorial environment](./EXERCISE-1.md)
- 2. [Basic configurations](./EXERCISE-2.md)
+ 1. [Basic configurations](./EXERCISE-1.md)
+ 2. [P4-UPF](./EXERCISE-2.md)
+ 
 ## Solutions
 
 You can find solutions for each exercise in the [solution](solution) directory.
