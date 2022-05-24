@@ -3,12 +3,6 @@ SPDX-FileCopyrightText: 2022-present Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 -->
 
-# WORK-IN-PROGRESS
-
-This tutorial is not ready to be used yet.
-
-***
-
 # SD-Fabric Tutorial
 
 Welcome to the SD-Fabric tutorial!
@@ -76,27 +70,35 @@ To facilitate working on the exercises, we provide a set of make-based commands
 to control the different aspects of the tutorial. Commands will be introduced in
 the exercises, here's a quick reference:
 
-| Make command        | Description                                            |
-|---------------------|------------------------------------------------------- |
-| `make deps`         | Pull and build all required dependencies               |
-| `make start`        | Start Mininet and ONOS containers                      |
-| `make start-upf`    | Start `pfcp-agent` and `smf-sim`
-| `make stop`         | Stop all containers                                    |
-| `make restart`      | Restart containers clearing any previous state         |
-| `make reset`        | Reset the tutorial environment                         |
-| `make onos-cli`     | Access the ONOS CLI (password: `rocks`, Ctrl-D to exit)|
-| `make onos-log`     | Show the ONOS log                                      |
-| `make mn-cli`       | Access the Mininet CLI (Ctrl-D to exit)                |
-| `make mn-log`       | Show the Mininet log (i.e., the CLI output)            |
-| `make mn-pcap`      | Dump packet on a particular Mininet host               |
-| `make netcfg`       | Push netcfg.json file (network config) to ONOS         |
+| Make command     | Description                                             |
+|------------------|---------------------------------------------------------|
+| `make deps`      | Pull and build all required dependencies                |
+| `make start`     | Start Mininet and ONOS containers                       |
+| `make start-upf` | Start PFCP Agent and other UPF containers               |
+| `make stop`      | Stop all containers                                     |
+| `make restart`   | Restart containers clearing any previous state          |
+| `make reset`     | Reset the tutorial environment                          |
+| `make onos-cli`  | Access the ONOS CLI (password: `rocks`, Ctrl-D to exit) |
+| `make onos-log`  | Show the ONOS log                                       |
+| `make mn-cli`    | Access the Mininet CLI (Ctrl-D to exit)                 |
+| `make mn-log`    | Show the Mininet log (i.e., the CLI output)             |
+| `make mn-pcap`   | Dump packet on a particular Mininet host                |
+| `make netcfg`    | Push netcfg.json file (network config) to ONOS          |
 
 ## Exercises
 
 Click on the exercise name to see the instructions:
 
- 1. [Basic configurations](./EXERCISE-1.md)
+ 1. [Basic configuration](./EXERCISE-1.md)
  2. [P4-UPF](./EXERCISE-2.md)
+
+We plan to add more exercises in the future. Make sure to watch this repo to be
+informed of any update. Planned additions:
+
+ * In-band Network Telemetry (INT)
+ * Extending SD-Fabric
+ * Slicing & QoS
+ * Advanced Connectivity
  
 ## Solutions
 
