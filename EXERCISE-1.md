@@ -52,7 +52,7 @@ the SD-Fabric apps, but instead providing a special ONOS pipeconf that brings in
 P4 program complemented by a set of drivers that among other things are
 responsible for translating flow objectives to the P4 program-specific tables.
 
-This P4 program is named `fabric_v1model.p4`. It's implementation along with the
+This P4 program is named `fabric_v1model.p4`. Its implementation along with the
 corresponding pipeconf drivers can be found in the fabric-tna repository:
 [fabric-tna] (open on GitHub).
 This pipeconf currently works on the `stratum_bmv2` software switch.
